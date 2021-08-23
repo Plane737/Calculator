@@ -38,6 +38,7 @@ body {
 }
 
 .button-container > button {
+    border-radius: 2px;
     color: #111f4a;
     font-size: large;
     border: none;
@@ -57,3 +58,7 @@ footer{
     font-size: 200%;
     color: #c6c463;
 } 
+a {
+    text-decoration: none;
+}
+

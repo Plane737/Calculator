@@ -1,74 +1,80 @@
-const buttons = document.querySelectorAll("button");
+const buttons = document.querySelectorAll(".button");
 const screen = document.querySelector(".display");
+const operatorButtons = document.querySelectorAll(".operator-button");
+
+
+document.querySelector(".delete-button").addEventListener("click", () => {
+    screen.textContent = screen.textContent.slice(0, screen.textContent.length - 1);
+    console.log(screen.textContent);
+    if(!screen.textContent) screen.textContent = "0";
+})
+
+document.querySelector(".pluss-minus-button").addEventListener("click", () => {
+    console.log(typeof screen.textContent)
+    if (!currentCalculation.currentNumNegative) {
+        screen.textContent =  "-" + screen.textContent; 
+        currentCalculation.currentNumNegative = true;
+    }
+        else {
+            screen.textContent = screen.textContent.slice(1);
+            currentCalculation.currentNumNegative = false   ;
+    }
+})
+
+for(let i = 0; i < operatorButtons.length; i++){
+    operatorButtons[i].addEventListener("click", e => {
+        console.log("Jalla jalla");
+        revertColor();
+        e.target.style.backgroundColor = "#e2e1b0";
+        currentCalculation.operator = e.target.textContent;
+        currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
+        console.log(currentCalculation.secondNum);
+        screen.textContent = 0;
+    })
+}
+
+document.querySelector(".equal-button").addEventListener("click", () => {
+    if(currentCalculation.secondNum == null) currentCalculation.secondNum = +screen.textContent; 
+    console.log(screen.textContent);
+    screen.textContent = 0;
+    console.log(screen.textContent);
+    display((operate(currentCalculation.operator, +currentCalculation.firstNum, +currentCalculation.secondNum)));
+    currentCalculation.firstNum = null;
+    currentCalculation.secondNum = null;
+    currentCalculation.operator = null;
+    currentCalculation.resetNext = true;
+    revertColor();
+})
+
 
 console.log(buttons);
 
 
-
-
 for(let i = 0; i < buttons.length; i++){
     buttons[i].addEventListener("click", e =>{
-        revertColor();
-        e.target.style.backgroundColor = "#e2e1b0";
-        switch (e.target.textContent) {
-            case "+":
-                currentCalculation.operator = "+";
-                currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
-                console.log(currentCalculation.secondNum);
-                screen.textContent = 0;
-                break;
-            case "-":
-                currentCalculation.operator = "-";
-                currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
-                console.log(currentCalculation.secondNum);
-                screen.textContent = 0;
-                break;
-            case "/":
-                currentCalculation.operator = "/";
-                currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
-                console.log(currentCalculation.secondNum);
-                screen.textContent = 0;
-                break;
-            case "*":
-                currentCalculation.operator = "*";
-                currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
-                console.log(currentCalculation.secondNum);
-                screen.textContent = 0;
-                break;
-            case "=":
-
-                if(currentCalculation.secondNum == null) currentCalculation.secondNum = screen.textContent; 
-                screen.textContent = 0;
-                display((operate(currentCalculation.operator, +currentCalculation.firstNum, +currentCalculation.secondNum)));
-                currentCalculation.firstNum = null;
-                currentCalculation.secondNum = null;
-                currentCalculation.operator = null;
-                currentCalculation.resetNext = true;
-                break;
-            default:
-                console.log("Jalla jalla");
-                display(e.target.textContent);
-
-
-            }
+        console.log("Jalla jalla");
+        display(e.target.textContent);
         });
 }
 
 
 
 function revertColor(){
-    const length = buttons.length;
-    for(let i = 0; i < length; i++) buttons[i].style.backgroundColor = "#c6c463";
+    const length = operatorButtons.length;
+    for(let i = 0; i < length; i++) operatorButtons[i].style.backgroundColor = "#c6c463";
 }
 
 let currentCalculation = {
     firstNum: null,
     secondNum: null,
     currentOperator: null,
+    currentNumNegative: false,
     resetNext: false
 }
 
 function display(str){
+    if (screen.textContent.length == 7) return;
+
     if(currentCalculation.resetNext) screen.textContent = "0"; currentCalculation.resetNext = false;
     if(str == "AC"){
         screen.textContent = "0";
@@ -78,10 +84,7 @@ function display(str){
         screen.textContent += str;
         return;
     }
-    console.log(currentCalculation.firstNum);
-    console.log(typeof currentCalculation.firstNum);
-    console.log(currentCalculation.secondNum);
-    console.log(typeof currentCalculation.secondNum);
+
 
     (screen.textContent.trim().charAt(0) == 0) && (screen.textContent.trim().charAt(1) != ".") ? screen.textContent = str : screen.textContent += str;
 }
@@ -97,6 +100,8 @@ function addition(firstNum, secondNum) {
     return firstNum + secondNum;
 }
 function division(firstNum, secondNum) {
+    if(secondNum == 0) return "FUCK OF";
+
     return +(firstNum/secondNum).toFixed(2);
 }
 function operate(operator, firstNum, secondNum){ 
@@ -107,7 +112,7 @@ function operate(operator, firstNum, secondNum){
             return subtraction(firstNum, secondNum);
         case "/":
             return division(firstNum, secondNum);
-        case "*":
+        case "x":
             return multiplication(firstNum, secondNum);
     }
 }
