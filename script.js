@@ -5,12 +5,13 @@ const operatorButtons = document.querySelectorAll(".operator-button");
 
 document.querySelector(".delete-button").addEventListener("click", () => {
     screen.textContent = screen.textContent.slice(0, screen.textContent.length - 1);
-    console.log(screen.textContent);
     if(!screen.textContent) screen.textContent = "0";
+})
+document.querySelector(".ac-button").addEventListener("click", () => {
+    display("AC");
 })
 
 document.querySelector(".pluss-minus-button").addEventListener("click", () => {
-    console.log(typeof screen.textContent)
     if (!currentCalculation.currentNumNegative) {
         screen.textContent =  "-" + screen.textContent; 
         currentCalculation.currentNumNegative = true;
@@ -23,36 +24,40 @@ document.querySelector(".pluss-minus-button").addEventListener("click", () => {
 
 for(let i = 0; i < operatorButtons.length; i++){
     operatorButtons[i].addEventListener("click", e => {
-        console.log("Jalla jalla");
+
         revertColor();
-        e.target.style.backgroundColor = "#e2e1b0";
         currentCalculation.operator = e.target.textContent;
+        e.target.style.backgroundColor = "#e2e1b0";
         currentCalculation.firstNum != null ? currentCalculation.secondNum = screen.textContent : currentCalculation.firstNum = screen.textContent;
-        console.log(currentCalculation.secondNum);
+        if((currentCalculation.firstNum != null)&& (currentCalculation.secondNum != null)) {
+            screen.textContent = operate(currentCalculation.lastOperator, +currentCalculation.firstNum, +currentCalculation.secondNum);
+            currentCalculation.firstNum = operate(currentCalculation.lastOperator, +currentCalculation.firstNum, +currentCalculation.secondNum)
+            currentCalculation.secondNum = null;
+            currentCalculation.lastOperator = currentCalculation.operator;
+            currentCalculation.resetNext = true;
+            return;
+        }
+        currentCalculation.lastOperator = currentCalculation.operator;
+        currentCalculation.resetNext = true;
         screen.textContent = 0;
     })
 }
 
 document.querySelector(".equal-button").addEventListener("click", () => {
     if(currentCalculation.secondNum == null) currentCalculation.secondNum = +screen.textContent; 
-    console.log(screen.textContent);
     screen.textContent = 0;
-    console.log(screen.textContent);
     display((operate(currentCalculation.operator, +currentCalculation.firstNum, +currentCalculation.secondNum)));
-    currentCalculation.firstNum = null;
+    currentCalculation.firstNum = operate(currentCalculation.operator, +currentCalculation.firstNum, +currentCalculation.secondNum);
     currentCalculation.secondNum = null;
-    currentCalculation.operator = null;
     currentCalculation.resetNext = true;
     revertColor();
 })
 
 
-console.log(buttons);
 
 
 for(let i = 0; i < buttons.length; i++){
     buttons[i].addEventListener("click", e =>{
-        console.log("Jalla jalla");
         display(e.target.textContent);
         });
 }
@@ -67,17 +72,20 @@ function revertColor(){
 let currentCalculation = {
     firstNum: null,
     secondNum: null,
-    currentOperator: null,
+    operator: null,
+    lastOperator: null,
     currentNumNegative: false,
     resetNext: false
 }
 
 function display(str){
-    if (screen.textContent.length == 7) return;
+    if ((screen.textContent.length === 7)) return;
 
     if(currentCalculation.resetNext) screen.textContent = "0"; currentCalculation.resetNext = false;
     if(str == "AC"){
         screen.textContent = "0";
+        currentCalculation.firstNum = null;
+        currentCalculation.secondNum = null;
         return;
     }
     if(str == "."){
@@ -90,6 +98,7 @@ function display(str){
 }
 display("0");
 
+
 function subtraction(firstNum, secondNum) {
     return firstNum - secondNum;
 }
@@ -100,7 +109,7 @@ function addition(firstNum, secondNum) {
     return firstNum + secondNum;
 }
 function division(firstNum, secondNum) {
-    if(secondNum == 0) return "FUCK OF";
+    if(secondNum == 0) return "Nei, 🤯";
 
     return +(firstNum/secondNum).toFixed(2);
 }
